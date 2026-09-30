@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Felix Task Manager (React)</title>
+  <!-- ../ because this file is one folder deeper than style.css -->
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    // same as in script.js, has nothing to do with the DOM
+    function createId() {
+      return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    }
+
+    function App() {
+      // all tasks live in state -> { id, name, completed }
+      // no localStorage here, so a reload resets to these three
+      const [tasks, setTasks] = useState([
+        { id: 'seed-1', name: 'Complete Web App', completed: false },
+        { id: 'seed-2', name: 'Complete JavaScript Practice', completed: false },
+        { id: 'seed-3', name: 'Complete Course Assignment', completed: true },
+      ]);
+      const [text, setText] = useState('');
+      const [message, setMessage] = useState('');
+      const [isError, setIsError] = useState(false);
+      const inputRef = useRef(null);
+
+      // Add button + Enter both end up here
+      function handleSubmit(event) {
+        event.preventDefault();
+
+        const name = text.trim();
+        if (name === '') {
+          setMessage('Please enter a task name — empty tasks cannot be added.');
+          setIsError(true);
+          inputRef.current.focus();
+          return;
+        }
+
+        const newTask = { id: createId(), name: name, completed: false };
+        setTasks((prev) => [...prev, newTask]);
+
+        setText('');
+        setMessage(`Added "${name}".`);
+        setIsError(false);
+        inputRef.current.focus();
+      }
+
+      function handleInput(event) {
+        setText(event.target.value);
+        setMessage('');
+        setIsError(false);
+      }
+
+      // new object for the changed task, React only notices new references
+      function toggleTask(id) {
+        setTasks((prev) =>
+          prev.map((task) =>
+            task.id === id ? { ...task, completed: !task.completed } : task
+          )
+        );
+      }
+
+      function deleteTask(id) {
+        setTasks((prev) => prev.filter((task) => task.id !== id));
+      }
+
+      return (
+        <main className="container">
+          <h1>Felix Task Manager (React)</h1>
+
+          <section aria-labelledby="add-heading">
+            <h2 id="add-heading">Add Task</h2>
+            <form className="add-form" onSubmit={handleSubmit} noValidate>
+              <label htmlFor="task-input" className="visually-hidden">Task name</label>
+              <input
+                type="text"
+                id="task-input"
+                placeholder="Task name"
+                maxLength={100}
+                autoComplete="off"
+                aria-describedby="form-message"
+                aria-invalid={isError}
+                className={isError ? 'is-invalid' : ''}
+                value={text}
+                onChange={handleInput}
+                ref={inputRef}
+              />
+              <button type="submit" className="btn">Add</button>
+            </form>
+            <p
+              id="form-message"
+              className={'form-message' + (message && !isError ? ' is-success' : '')}
+              aria-live="polite"
+            >
+              {message}
+            </p>
+          </section>
+
+          <section aria-labelledby="list-heading">
+            <h2 id="list-heading">Tasks</h2>
+            <ul className="task-list">
+              {tasks.length === 0 && <li className="empty-state">No tasks yet.</li>}
+
+              {tasks.map((task) => (
+                <li
+                  key={task.id}
+                  className={'task-item' + (task.completed ? ' is-completed' : '')}
+                >
+                  <label className="task-label">
+                    <input
+                      type="checkbox"
+                      className="task-toggle"
+                      checked={task.completed}
+                      onChange={() => toggleTask(task.id)}
+                    />
+                    <span className="task-name">{task.name}</span>
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-delete"
+                    aria-label={`Delete task "${task.name}"`}
+                    onClick={() => deleteTask(task.id)}
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </main>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

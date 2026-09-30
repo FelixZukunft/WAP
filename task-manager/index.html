@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- needed or phones ignore the media query -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Felix Task Manager</title>
+  <link rel="icon" href="img/felix.jpg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="hero">
+    <img class="profile" src="img/felix.jpg" alt="Profile picture of Felix" width="200" height="200">
+    <h1>Felix Task Manager</h1>
+  </header>
+
+  <main class="container">
+
+    <section aria-labelledby="add-heading">
+      <h2 id="add-heading">Add Task</h2>
+      <!-- a form so Enter works too, not only the button -->
+      <form id="task-form" class="add-form" novalidate>
+        <label for="task-input" class="visually-hidden">Task name</label>
+        <input type="text" id="task-input" name="task" placeholder="Task name" maxlength="100" autocomplete="off" aria-describedby="form-message">
+        <button type="submit" class="btn">Add</button>
+      </form>
+      <p id="form-message" class="form-message" aria-live="polite"></p>
+    </section>
+
+    <section aria-labelledby="filter-heading">
+      <h2 id="filter-heading">Filter</h2>
+      <!-- aria-pressed marks the active one, css uses it too -->
+      <div class="filters" role="group" aria-label="Filter tasks">
+        <button type="button" class="btn btn-filter" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="btn btn-filter" data-filter="incomplete" aria-pressed="false">Incomplete</button>
+        <button type="button" class="btn btn-filter" data-filter="completed" aria-pressed="false">Completed</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="list-heading">
+      <h2 id="list-heading">Tasks</h2>
+      <!-- li's are built in script.js -->
+      <ul id="task-list" class="task-list">
+        <li class="empty-state">JavaScript is required to load tasks.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="container stats" aria-live="polite">
+    <p>Total: <strong><span id="stat-total">0</span></strong></p>
+    <p>Incomplete: <strong><span id="stat-incomplete">0</span></strong></p>
+    <p>Completed: <strong><span id="stat-completed">0</span></strong></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
